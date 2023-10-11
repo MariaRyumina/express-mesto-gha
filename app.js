@@ -18,22 +18,22 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '6524209929d5df110bf9df02'
+    _id: '6524209929d5df110bf9df02',
   };
 
   next();
 });
 
-app.use("/users", userRoutes);
-app.use("/cards", cardRoutes);
+app.use('/users', userRoutes);
+app.use('/cards', cardRoutes);
 
 // подключаемся к серверу mongo
 mongoose.connect(MONGO_URL, {
-  useNewUrlParser: true
+  useNewUrlParser: true,
 })
   .then(() => console.log('соединение с базой установлено'))
-  .catch(err => console.error(`ошибка соединения с базой ${err}`));
+  .catch((err) => console.error(`ошибка соединения с базой ${err}`));
 
 app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`)
-})
+  console.log(`App listening on port ${PORT}`);
+});
