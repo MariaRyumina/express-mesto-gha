@@ -13,16 +13,17 @@ const getUsers = (req, res) => {
 const getUserById = (req, res) => {
   if (req.params.userId !== req.user._id) {
     res.status(ERROR_VALIDATION).send({ message: 'Пользователь с некорректным id' });
-  } else {
-    User.findById(req.params.userId)
-      .then((user) => res.send(user))
-      .catch((err) => {
-        if (err.message.includes('ObjectId')) {
-          return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден' });
-        }
-        return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
-      });
+    return;
   }
+
+  User.findById(req.params.userId)
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err.message.includes('ObjectId')) {
+        return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден' });
+      }
+      return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
+    });
 };
 
 const createUser = (req, res) => {
