@@ -16,7 +16,7 @@ const getUserById = (req, res) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(ERROR_VALIDATION).send({ message: 'Пользователь с некорректным id' });
-      } if (err.message.includes('ObjectId')) {
+      } if (err.name === 'NotFound') {
         return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден' });
       }
       return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
