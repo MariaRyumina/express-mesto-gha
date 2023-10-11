@@ -22,7 +22,7 @@ const createUser = (req, res) => {
 	const { name, about, avatar } = req.body; // получим из объекта запроса имя, описание и аватар пользователя
 
 	User.create({ name, about, avatar })
-		.then(user => res.send({ data: user })) //вернём записанные в базу данные
+		.then(user => res.send({ data: user })) // вернём записанные в базу данные
 		.catch(err => {
 			if (err.name === 'ValidationError') {
 				return res.status(400).send({ message: `Переданы некорректные данные при создании пользователя` })
