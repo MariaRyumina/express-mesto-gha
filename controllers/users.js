@@ -14,7 +14,7 @@ const getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'orFail') {
+      if (err.name === 'ValidationError') {
         return res.status(ERROR_VALIDATION).send({ message: 'Пользователь с некорректным id' });
       } if (err.message.includes('ObjectId')) {
         return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден' });
