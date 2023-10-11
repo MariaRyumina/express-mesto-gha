@@ -11,6 +11,10 @@ const getUsers = (req, res) => {
 };
 
 const getUserById = (req, res) => {
+  if (req.params.userId !== req.user._id) {
+    return res.status(ERROR_VALIDATION).send({ message: 'Пользователь с некорректным id' })
+  }
+
   User.findById(req.params.userId)
     .then((user) => res.send(user))
     .catch((err) => {
