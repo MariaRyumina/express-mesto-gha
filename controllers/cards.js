@@ -5,7 +5,7 @@ const ERROR_SERVER = 500;
 
 const getCard = (req, res) => {
 	Card.find({})
-		.then(cards => res.send({ data: cards }))
+    .then(cards => res.send({ data: cards }))
 		.catch(err => res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` }))
 }
 

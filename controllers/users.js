@@ -4,7 +4,7 @@ const ERROR_NOT_FOUND = 404;
 const ERROR_SERVER = 500;
 
 const getUsers = (req, res) => {
-	User.find({})
+  User.find({})
 		.then(users => res.send({ data: users }))
 		.catch(err => res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` }))
 }
