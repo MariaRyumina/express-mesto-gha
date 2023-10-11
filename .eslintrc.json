@@ -9,5 +9,9 @@
         "ecmaVersion": "latest"
     },
     "rules": {
+      "no-console": "off",
+      "no-underscore-dangle": ["error", { "allow": ["_id"] }],
+      "import/extensions": "off",
+      "import/prefer-default-export": "off"
     }
 }

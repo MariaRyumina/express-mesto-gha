@@ -14,14 +14,14 @@ const {
 const app = express();
 
 app.use(bodyParser.json()); // для собирания JSON-формата
-app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса (при false, в свойства body могут попасть только строки и массивы)
+app.use(bodyParser.urlencoded({ extended: true })); // при false, в свойства body могут попасть только строки и массивы
 
 app.use((req, res, next) => {
-	req.user = {
-		_id: '6524209929d5df110bf9df02'
-	};
+  req.user = {
+    _id: '6524209929d5df110bf9df02'
+  };
 
-	next();
+  next();
 });
 
 app.use("/users", userRoutes);

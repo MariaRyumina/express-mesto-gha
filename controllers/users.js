@@ -1,9 +1,12 @@
 const User = require('../models/user');
+const ERROR_VALIDATION = 400;
+const ERROR_NOT_FOUND = 404;
+const ERROR_SERVER = 500;
 
 const getUsers = (req, res) => {
 	User.find({})
 		.then(users => res.send({ data: users }))
-		.catch(err => res.status(500).send({ message: `Ошибка по умолчанию: ${err.message}` }))
+		.catch(err => res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` }))
 }
 
 const getUserById = (req, res) => {
@@ -11,9 +14,9 @@ const getUserById = (req, res) => {
 		.then(user => res.send(user))
 		.catch(err => {
 			if (err.message.includes('ObjectId')) {
-				return res.status(404).send({ message: `Пользователь по указанному _id не найден` })
+				return res.status(ERROR_NOT_FOUND).send({ message: `Пользователь по указанному _id не найден` })
 			} else {
-				return res.status(500).send({ message: `Ошибка по умолчанию: ${err.message}` })
+				return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` })
 			}
 		})
 }
@@ -25,9 +28,9 @@ const createUser = (req, res) => {
 		.then(user => res.send({ data: user })) // вернём записанные в базу данные
 		.catch(err => {
 			if (err.name === 'ValidationError') {
-				return res.status(400).send({ message: `Переданы некорректные данные при создании пользователя` })
+				return res.status(ERROR_VALIDATION).send({ message: `Переданы некорректные данные при создании пользователя` })
 			} else {
-				return res.status(500).send({ message: `Ошибка по умолчанию: ${err.message}` })
+				return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` })
 			}
 		})
 }
@@ -38,13 +41,12 @@ const upgradeUserInfo = (req, res) => {
 	User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
 		.then(data => res.send({ data }))
 		.catch(err => {
-			console.log(err)
 			if (err.name === 'ValidationError') {
-				return res.status(400).send({ message: `Переданы некорректные данные при обновлении профиля` })
+				return res.status(ERROR_VALIDATION).send({ message: `Переданы некорректные данные при обновлении профиля` })
 			} else if (err.message.includes('ObjectId')) {
-				return res.status(404).send({ message: `Пользователь с указанным _id не найден` })
+				return res.status(ERROR_NOT_FOUND).send({ message: `Пользователь с указанным _id не найден` })
 			} else {
-				return res.status(500).send({ message: `Ошибка по умолчанию: ${err.message}` })
+				return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` })
 			}
 		})
 }
@@ -56,11 +58,11 @@ const upgradeUserAvatar = (req, res) => {
 		.then( avatar => res.send({ avatar }))
 		.catch(err => {
 			if (err.name === 'ValidationError') {
-				return res.status(400).send({message: `Переданы некорректные данные при обновлении аватара`})
+				return res.status(ERROR_VALIDATION).send({message: `Переданы некорректные данные при обновлении аватара`})
 			} else if (err.message.includes('ObjectId')) {
-				return res.status(404).send({message: `Пользователь с указанным _id не найден`})
+				return res.status(ERROR_NOT_FOUND).send({message: `Пользователь с указанным _id не найден`})
 			} else {
-				return res.status(500).send({ message: `Ошибка по умолчанию: ${err.message}` })
+				return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` })
 			}
 		})
 }

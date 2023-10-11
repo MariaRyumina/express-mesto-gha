@@ -1,9 +1,12 @@
 const Card = require('../models/card');
+const ERROR_VALIDATION = 400;
+const ERROR_NOT_FOUND = 404;
+const ERROR_SERVER = 500;
 
 const getCard = (req, res) => {
 	Card.find({})
 		.then(cards => res.send({ data: cards }))
-		.catch(err => res.status(500).send({ message: `Ошибка по умолчанию: ${err.message}` }))
+		.catch(err => res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` }))
 }
 
 const createCard = (req, res) => {
@@ -13,9 +16,9 @@ const createCard = (req, res) => {
 		.then(card => res.send({ data: card }))
 		.catch(err => {
 			if (err.name === 'ValidationError') {
-				return res.status(400).send({ message: `Переданы некорректные данные при создании карточки` })
+				return res.status(ERROR_VALIDATION).send({ message: `Переданы некорректные данные при создании карточки` })
 			} else {
-				return res.status(500).send({ message: `Ошибка по умолчанию: ${err.message}` })
+				return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` })
 			}
 		})
 }
@@ -25,9 +28,9 @@ const deleteCard = (req, res) => {
 		.then(data => res.send({ data }))
 		.catch(err => {
 			if (err.message.includes('ObjectId')) {
-				return res.status(404).send({ message: `Карточка с указанным _id не найдена` })
+				return res.status(ERROR_NOT_FOUND).send({ message: `Карточка с указанным _id не найдена` })
 			} else {
-				return res.status(500).send({ message: `Ошибка по умолчанию: ${err.message}` })
+				return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` })
 			}
 		})
 }
@@ -41,11 +44,11 @@ const likeCard = (req, res) => {
 		.then(data => res.send({ data }))
 		.catch(err => {
 			if (err.name === 'ValidationError') {
-				return res.status(400).send({message: `Переданы некорректные данные для постановки лайка`})
+				return res.status(ERROR_VALIDATION).send({message: `Переданы некорректные данные для постановки лайка`})
 			} else if (err.message.includes('ObjectId')) {
-				return res.status(404).send({message: `Передан несуществующий _id карточки`})
+				return res.status(ERROR_NOT_FOUND).send({message: `Передан несуществующий _id карточки`})
 			} else {
-				return res.status(500).send({ message: `Ошибка по умолчанию: ${err.message}` })
+				return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` })
 			}
 		})
 }
@@ -59,11 +62,11 @@ const dislikeCard = (req, res) => {
 		.then(data => res.send({ data }))
 		.catch(err => {
 			if (err.name === 'ValidationError') {
-				return res.status(400).send({message: `Переданы некорректные данные для снятии лайка`})
+				return res.status(ERROR_VALIDATION).send({message: `Переданы некорректные данные для снятии лайка`})
 			} else if (err.message.includes('ObjectId')) {
-				return res.status(404).send({message: `Передан несуществующий _id карточки`})
+				return res.status(ERROR_NOT_FOUND).send({message: `Передан несуществующий _id карточки`})
 			} else {
-				return res.status(500).send({ message: `Ошибка по умолчанию: ${err.message}` })
+				return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` })
 			}
 		})
 }
