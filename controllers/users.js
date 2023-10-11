@@ -12,14 +12,22 @@ const getUsers = (req, res) => {
 
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(ERROR_VALIDATION).send({ message: 'Пользователь с некорректным id' });
-      } if (err.name === 'CastError') {
-        return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден' });
+    .then((user) => {
+      if (user) {
+        res.send(user)
       }
-      return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
+      res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден' });
+    })
+    .catch((err) => {
+      console.log(err)
+      if (err.name === 'ValidationError') {
+        res.status(ERROR_VALIDATION).send({ message: 'Пользователь с некорректным id' });
+        return;
+      } if (err.name === 'CastError') {
+        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден' });
+        return;
+      }
+      res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
     });
 };
 
@@ -44,7 +52,7 @@ const upgradeUserInfo = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при обновлении профиля' });
-      } if (err.message.includes('ObjectId')) {
+      } if (err.name === 'CastError') {
         return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден' });
       }
       return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
@@ -59,7 +67,7 @@ const upgradeUserAvatar = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при обновлении аватара' });
-      } if (err.message.includes('ObjectId')) {
+      } if (err.name === 'CastError') {
         return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден' });
       }
       return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
