@@ -20,7 +20,11 @@ app.use((req, res, next) => {
   req.user = {
     _id: '6524209929d5df110bf9df02',
   };
+  next();
+});
 
+app.use((req, res, next) => {
+  res.status(404).send({ message: 'Страница не найдена' });
   next();
 });
 
