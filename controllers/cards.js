@@ -39,14 +39,17 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(() => Error('NotFound'))
     .then((data) => res.send({ data }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные для постановки лайка' });
-      } if (err.message.includes('ObjectId')) {
-        return res.status(ERROR_NOT_FOUND).send({ message: 'Передан несуществующий _id карточки' });
+      if (err.name === 'CastError') {
+        res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные для постановки лайка' });
+        return;
+      } if (err.message === 'NotFound') {
+        res.status(ERROR_NOT_FOUND).send({ message: 'Передан несуществующий _id карточки' });
+        return;
       }
-      return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
+      res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
     });
 };
 
