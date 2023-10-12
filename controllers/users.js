@@ -1,5 +1,4 @@
 const User = require('../models/user');
-const mongoose = require("mongoose");
 
 const ERROR_VALIDATION = 400;
 const ERROR_NOT_FOUND = 404;
@@ -16,10 +15,10 @@ const getUserById = (req, res) => {
     .orFail(() => Error('NotFound'))
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(ERROR_VALIDATION).send({ message: 'Пользователь с некорректным id' });
         return;
-      } if (err.name === 'CastError') {
+      } if (err.message === 'NotFound') {
         res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден' });
         return;
       }
