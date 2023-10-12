@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const mongoose = require("mongoose");
 
 const ERROR_VALIDATION = 400;
 const ERROR_NOT_FOUND = 404;
@@ -12,14 +13,9 @@ const getUsers = (req, res) => {
 
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => {
-      if (user) {
-        res.send(user)
-      }
-      res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь по указанному _id не найден' });
-    })
+    .orFail(() => Error('NotFound'))
+    .then((user) => res.send(user))
     .catch((err) => {
-      console.log(err)
       if (err.name === 'ValidationError') {
         res.status(ERROR_VALIDATION).send({ message: 'Пользователь с некорректным id' });
         return;
