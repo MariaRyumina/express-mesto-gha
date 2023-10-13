@@ -30,7 +30,7 @@ const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(201).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при создании пользователя' });
@@ -64,12 +64,13 @@ const upgradeUserAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
+    .orFail(() => Error('NotFound'))
     .then(() => res.send({ avatar }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при обновлении аватара' });
         return;
-      } if (err.name === 'CastError') {
+      } if (err.message === 'NotFound') {
         res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден' });
         return;
       }
