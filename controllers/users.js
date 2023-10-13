@@ -64,17 +64,17 @@ const upgradeUserAvatar = (req, res) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-    .orFail(() => Error('NotFound'))
-    .then(() => res.send({ avatar }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при обновлении аватара' });
-        return;
-      } if (err.message === 'NotFound') {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден' });
-        return;
+    .then((data) => {
+      if (data) {
+        res.send({ avatar });
       }
-      res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
+      res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден' });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при обновлении аватара' });
+      }
+      return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
     });
 };
 
