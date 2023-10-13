@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose').default;
-const bodyParser = require('body-parser');
 const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
 
@@ -13,23 +12,25 @@ const {
 // создание приложения методом express
 const app = express();
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '6524209929d5df110bf9df02',
+    _id: '6524209929d5df110bf9df03',
   };
-  next();
-});
 
-app.use('/404', (req, res, next) => {
-  res.status(404).send({ message: 'Страница не найдена' });
   next();
 });
 
 app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
+
+app.use('/*', (req, res, next) => {
+  res.status(404).send({ message: 'Страница не найдена' });
+
+  next();
+});
 
 // подключаемся к серверу mongo
 mongoose.connect(MONGO_URL, {

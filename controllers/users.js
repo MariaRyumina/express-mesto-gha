@@ -33,9 +33,10 @@ const createUser = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при создании пользователя' });
+        res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при создании пользователя' });
+        return;
       }
-      return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
+      res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
     });
 };
 
@@ -43,14 +44,19 @@ const upgradeUserInfo = (req, res) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-    .then((data) => res.send({ data }))
+    .then((data) => {
+      if (data) {
+        res.send(data);
+        return;
+      }
+      res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден' });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при обновлении профиля' });
-      } if (err.name === 'CastError') {
-        return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден' });
+        res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при обновлении профиля' });
+        return;
       }
-      return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
+      res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
     });
 };
 
@@ -61,11 +67,13 @@ const upgradeUserAvatar = (req, res) => {
     .then(() => res.send({ avatar }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при обновлении аватара' });
+        res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при обновлении аватара' });
+        return;
       } if (err.name === 'CastError') {
-        return res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден' });
+        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден' });
+        return;
       }
-      return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
+      res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
     });
 };
 
