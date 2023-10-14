@@ -3,6 +3,8 @@ const mongoose = require('mongoose').default;
 const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
 
+const ERROR_NOT_FOUND = 404;
+
 // слушаем 3000 порт
 const {
   PORT = 3000,
@@ -27,7 +29,7 @@ app.use('/users', userRoutes);
 app.use('/cards', cardRoutes);
 
 app.use('/*', (req, res, next) => {
-  res.status(404).send({ message: 'Страница не найдена' });
+  res.status(ERROR_NOT_FOUND).send({ message: 'Страница не найдена' });
 
   next();
 });

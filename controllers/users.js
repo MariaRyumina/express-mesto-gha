@@ -1,5 +1,6 @@
 const User = require('../models/user');
 
+const STATUS_CREATED = 201;
 const ERROR_VALIDATION = 400;
 const ERROR_NOT_FOUND = 404;
 const ERROR_SERVER = 500;
@@ -30,7 +31,7 @@ const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(STATUS_CREATED).send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при создании пользователя' });
@@ -67,11 +68,12 @@ const upgradeUserAvatar = (req, res) => {
     .then((data) => {
       if (data) {
         res.send({ avatar });
+        return;
       }
       res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден' });
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         return res.status(ERROR_VALIDATION).send({ message: 'Переданы некорректные данные при обновлении аватара' });
       }
       return res.status(ERROR_SERVER).send({ message: `Ошибка по умолчанию: ${err.message}` });
