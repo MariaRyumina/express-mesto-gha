@@ -2,8 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose').default;
 const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
-
-const ERROR_NOT_FOUND = 404;
+const { login, createUser } = require('./controllers/users');
+const httpCode = require('./httpCode');
+const auth = require('./middlewares/auth');
 
 // слушаем 3000 порт
 const {
@@ -17,30 +18,27 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6524209929d5df110bf9df03',
-  };
+app.use('/users', auth, userRoutes);
+app.use('/cards', auth, cardRoutes);
 
-  next();
-});
-
-app.use('/users', userRoutes);
-app.use('/cards', cardRoutes);
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 app.use('/*', (req, res, next) => {
-  res.status(ERROR_NOT_FOUND).send({ message: 'Страница не найдена' });
+  res.status(httpCode.ERROR_NOT_FOUND).send({ message: 'Страница не найдена' });
 
   next();
 });
 
 // подключаемся к серверу mongo
-mongoose.connect(MONGO_URL, {
-  useNewUrlParser: true,
-})
-  .then(() => console.log('соединение с базой установлено'))
-  .catch((err) => console.error(`ошибка соединения с базой ${err}`));
+async function init() {
+  await mongoose.connect(MONGO_URL, {
+    useNewUrlParser: true,
+  });
+  console.log('соединение с базой установлено');
 
-app.listen(PORT, () => {
+  await app.listen(PORT);
   console.log(`App listening on port ${PORT}`);
-});
+}
+
+init();
