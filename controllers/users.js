@@ -57,7 +57,7 @@ const createUser = (req, res, next) => {
       res.status(httpCode.STATUS_CREATED).send(userWithoutPassword);
     })
     .catch((err) => {
-      if(err.code === 11000) {
+      if (err.code === 11000) {
         next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
         return;
       }
