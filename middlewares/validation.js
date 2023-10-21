@@ -19,7 +19,7 @@ module.exports = {
     }),
   }),
   getUserByIdValidation: celebrate({
-    body: Joi.object().keys({
+    params: Joi.object().keys({
       userId: Joi.string().hex().length(24).required(),
     }),
   }),
@@ -41,12 +41,12 @@ module.exports = {
     }),
   }),
   deleteCardValidation: celebrate({
-    body: Joi.object().keys({
+    params: Joi.object().keys({
       userId: Joi.string().hex().length(24).required(),
     }),
   }),
   likeCardValidation: celebrate({
-    body: Joi.object().keys({
+    params: Joi.object().keys({
       cardId: Joi.string().hex().length(24).required(),
     }),
   }),
