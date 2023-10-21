@@ -26,6 +26,7 @@ const getUserById = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new ValidationError('Пользователь с некорректным id'));
+        return;
       } if (err.message === 'NotFound') {
         next(new NotFoundError('Пользователь по указанному _id не найден'));
         return;
