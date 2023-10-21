@@ -6,7 +6,12 @@ const {
   likeCard,
   dislikeCard,
 } = require('../controllers/cards');
-const { createCardValidation, deleteCardValidation, likeCardValidation, dislikeCardValidation } = require('../middlewares/validation');
+const {
+  createCardValidation,
+  deleteCardValidation,
+  likeCardValidation,
+  dislikeCardValidation,
+} = require('../middlewares/validation');
 
 router.get('/', getCard);
 router.post('/', createCardValidation, createCard);
