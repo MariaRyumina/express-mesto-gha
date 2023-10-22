@@ -4,7 +4,6 @@ const User = require('../models/user');
 const httpCode = require('../httpCode');
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
-const ForbiddenError = require('../errors/ForbiddenError');
 const ConflictError = require('../errors/ConflictError');
 
 const getUsers = (req, res, next) => {
@@ -73,21 +72,14 @@ const createUser = (req, res, next) => {
 const upgradeUserInfo = (req, res, next) => {
   const { name, about } = req.body;
 
-  User.findById(req.user._id)
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => Error('NotFound'))
-    .then((user) => {
-      if (user._id.toString() !== req.user._id) {
-        next(new ForbiddenError('Нельзя редактировать чужой профиль!'));
+    .then((data) => {
+      if (data) {
+        res.send(data);
         return;
       }
-      User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
-        .then((data) => {
-          if (data) {
-            res.send(data);
-            return;
-          }
-          next(new NotFoundError('Пользователь с указанным _id не найден'));
-        });
+      next(new NotFoundError('Пользователь с указанным _id не найден'));
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -101,21 +93,14 @@ const upgradeUserInfo = (req, res, next) => {
 const upgradeAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
-  User.findById(req.user._id)
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(() => Error('NotFound'))
-    .then((user) => {
-      if (user._id.toString() !== req.user._id) {
-        next(new ForbiddenError('Нельзя редактировать чужой аватар!'));
+    .then((data) => {
+      if (data) {
+        res.send({ avatar });
         return;
       }
-      User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
-        .then((data) => {
-          if (data) {
-            res.send({ avatar });
-            return;
-          }
-          next(new NotFoundError('Пользователь с указанным _id не найден'));
-        });
+      next(new NotFoundError('Пользователь с указанным _id не найден'));
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
